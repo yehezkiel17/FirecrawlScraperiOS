@@ -15,6 +15,7 @@
 		A10000011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000012 /* Assets.xcassets */; };
 		A10000029 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000030 /* Config.swift */; };
 		A10000033 /* TappableTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000034 /* TappableTextView.swift */; };
+		A10000035 /* GameLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000036 /* GameLinks.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		A10000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A10000030 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		A10000034 /* TappableTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableTextView.swift; sourceTree = "<group>"; };
+		A10000036 /* GameLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLinks.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 				A10000004 /* ContentView.swift */,
 				A10000034 /* TappableTextView.swift */,
 				A10000006 /* Models.swift */,
+				A10000036 /* GameLinks.swift */,
 				A10000008 /* ScraperViewModel.swift */,
 				A10000010 /* MCPService.swift */,
 				A10000030 /* Config.swift */,
@@ -146,6 +149,7 @@
 				A10000003 /* ContentView.swift in Sources */,
 				A10000033 /* TappableTextView.swift in Sources */,
 				A10000005 /* Models.swift in Sources */,
+				A10000035 /* GameLinks.swift in Sources */,
 				A10000007 /* ScraperViewModel.swift in Sources */,
 				A10000009 /* MCPService.swift in Sources */,
 				A10000029 /* Config.swift in Sources */,
