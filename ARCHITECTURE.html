@@ -1,0 +1,742 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FirecrawlScraper Architecture Documentation</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #95a5a6;
+            padding-bottom: 8px;
+            margin-top: 25px;
+        }
+
+        h3 {
+            color: #5a6c7d;
+            margin-top: 20px;
+        }
+
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #f8f8f2;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            color: #666;
+            font-style: italic;
+            margin: 15px 0;
+        }
+
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .mermaid {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        .diagram-placeholder {
+            background-color: #e8f4f8;
+            border: 2px dashed #3498db;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+            color: #555;
+        }
+
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+
+        .architecture-ascii {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre;
+            overflow-x: auto;
+            page-break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+    <h1>FirecrawlScraper Architecture Documentation</h1>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#system-architecture">System Architecture</a></li>
+<li><a href="#component-details">Component Details</a></li>
+<li><a href="#sequence-diagrams">Sequence Diagrams</a></li>
+<li><a href="#data-flow">Data Flow</a></li>
+<li><a href="#key-implementation-details">Key Implementation Details</a></li>
+</ol>
+<hr />
+<h2>Overview</h2>
+<p>FirecrawlScraper is a macOS/iOS application that scrapes web content using the Firecrawl MCP (Model Context Protocol) Server. The app communicates with a Node.js-based MCP server via stdio (standard input/output) to fetch web page content, screenshots, and extract images.</p>
+<h3>Key Technologies</h3>
+<ul>
+<li><strong>Swift/SwiftUI</strong>: Frontend UI and business logic</li>
+<li><strong>MCP (Model Context Protocol)</strong>: Communication protocol for tool calling</li>
+<li><strong>JSON-RPC 2.0</strong>: Message format for MCP communication</li>
+<li><strong>Firecrawl API</strong>: Backend service for web scraping</li>
+<li><strong>Node.js/npx</strong>: Runtime for the MCP server</li>
+</ul>
+<hr />
+<h2>System Architecture</h2>
+<pre class="codehilite"><code>┌─────────────────────────────────────────────────────────────┐
+│                     SwiftUI Interface                        │
+│                      (ContentView)                           │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   ScraperViewModel                           │
+│            (Manages UI state &amp; orchestration)                │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    MCPServiceMac                             │
+│         (Business logic for web scraping)                    │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     MCPClient                                │
+│        (JSON-RPC communication manager)                      │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼ stdio pipes
+┌─────────────────────────────────────────────────────────────┐
+│              Node.js Process (via wrapper script)            │
+│                 firecrawl-mcp server                         │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼ HTTPS
+┌─────────────────────────────────────────────────────────────┐
+│                  Firecrawl Cloud API                         │
+│              (Web scraping service)                          │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+<h2>Component Details</h2>
+<h3>1. ContentView (UI Layer)</h3>
+<p><strong>File</strong>: <code>ContentView.swift</code></p>
+<p><strong>Responsibilities</strong>:
+- Display URL input field
+- Show loading indicator during scraping
+- Display scrape results (title, description, screenshot, images, content)
+- Handle user interactions</p>
+<p><strong>Key Features</strong>:
+- Auto-adds <code>https://</code> to URLs without scheme
+- Displays base64-encoded screenshots
+- Shows horizontal scrollable gallery of extracted images
+- Async image loading with error handling</p>
+<h3>2. ScraperViewModel (State Management)</h3>
+<p><strong>File</strong>: <code>ScraperViewModel.swift</code></p>
+<p><strong>Responsibilities</strong>:
+- Manage app state (@Published properties)
+- Validate and normalize URLs
+- Orchestrate scraping operations
+- Handle errors and update UI state</p>
+<p><strong>Key Properties</strong>:</p>
+<pre class="codehilite"><code class="language-swift">@Published var scrapedContent: ScrapedContent?
+@Published var isLoading: Bool
+@Published var errorMessage: String?
+</code></pre>
+
+<h3>3. MCPServiceMac (Business Logic)</h3>
+<p><strong>File</strong>: <code>MCPServiceMac.swift</code></p>
+<p><strong>Responsibilities</strong>:
+- Start/stop MCP client
+- Call Firecrawl scraping tool
+- Parse MCP responses
+- Extract images from markdown content
+- Transform data into ScrapedContent model</p>
+<p><strong>Key Methods</strong>:
+- <code>startClient()</code>: Initialize MCP connection
+- <code>scrapeWebsite(url:)</code>: Perform scraping operation
+- <code>extractImageURLs(from:baseURL:)</code>: Extract images from markdown</p>
+<h3>4. MCPClient (Protocol Handler)</h3>
+<p><strong>File</strong>: <code>MCPClient.swift</code></p>
+<p><strong>Responsibilities</strong>:
+- Manage subprocess (Node.js MCP server)
+- Implement JSON-RPC 2.0 protocol
+- Handle stdio communication
+- Parse responses and handle notifications</p>
+<p><strong>Key Methods</strong>:
+- <code>start()</code>: Launch MCP server process
+- <code>initialize()</code>: Send MCP initialize request
+- <code>callTool()</code>: Execute MCP tool
+- <code>readLine()</code>: Read JSON-RPC messages from pipe</p>
+<h3>5. MCP Server Wrapper</h3>
+<p><strong>File</strong>: <code>run-mcp-server.sh</code></p>
+<p><strong>Purpose</strong>: Set up environment for Node.js process</p>
+<p><strong>Contents</strong>:</p>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
+export PATH=&quot;/Users/.../node/v24.12.0/bin:$PATH&quot;
+export FIRECRAWL_API_KEY=&quot;fc-...&quot;
+exec npx -y firecrawl-mcp
+</code></pre>
+
+<h3>6. Firecrawl MCP Server</h3>
+<p><strong>Package</strong>: <code>firecrawl-mcp</code> (npm)</p>
+<p><strong>Responsibilities</strong>:
+- Implement MCP protocol
+- Call Firecrawl API
+- Return scraped content</p>
+<hr />
+<h2>Sequence Diagrams</h2>
+<h3>1. Application Startup</h3>
+<pre class="codehilite"><code class="language-mermaid">sequenceDiagram
+    participant User
+    participant ContentView
+    participant ViewModel as ScraperViewModel
+    participant MCP as MCPServiceMac
+
+    User-&gt;&gt;ContentView: Launch app
+    ContentView-&gt;&gt;ViewModel: Initialize @StateObject
+    Note over ViewModel: Creates MCPServiceMac instance
+    Note over MCP: Process NOT started yet
+    ContentView-&gt;&gt;User: Display UI
+</code></pre>
+
+<h3>2. Web Scraping Flow (Complete)</h3>
+<pre class="codehilite"><code class="language-mermaid">sequenceDiagram
+    participant User
+    participant UI as ContentView
+    participant VM as ScraperViewModel
+    participant MCP as MCPServiceMac
+    participant Client as MCPClient
+    participant Process as Node.js Process
+    participant Server as Firecrawl MCP
+    participant API as Firecrawl API
+
+    User-&gt;&gt;UI: Enter URL &amp; click &quot;Scrape&quot;
+    UI-&gt;&gt;VM: scrapeURL(urlString)
+
+    Note over VM: Normalize URL&lt;br/&gt;(add https:// if needed)
+    VM-&gt;&gt;VM: processedURLString = &quot;https://&quot; + url
+    VM-&gt;&gt;MCP: scrapeWebsite(url)
+
+    alt First scrape (client not started)
+        MCP-&gt;&gt;Client: startClient()
+        Client-&gt;&gt;Client: Create Process &amp; Pipes
+        Client-&gt;&gt;Process: Launch run-mcp-server.sh
+        Note over Process: Set PATH &amp; API_KEY
+        Process-&gt;&gt;Server: Start firecrawl-mcp
+        Server--&gt;&gt;Process: Server running (PID)
+
+        Client-&gt;&gt;Process: Send initialize request
+        Note over Client,Process: JSON-RPC via stdin
+        Process-&gt;&gt;Server: Forward initialize
+        Server--&gt;&gt;Process: Initialize response
+        Process--&gt;&gt;Client: JSON response via stdout
+        Client-&gt;&gt;Client: isInitialized = true
+    end
+
+    MCP-&gt;&gt;Client: callTool(&quot;firecrawl_scrape&quot;, args)
+    Note over MCP: Arguments:&lt;br/&gt;url, formats: [markdown, screenshot, links]&lt;br/&gt;onlyMainContent: true
+
+    Client-&gt;&gt;Client: Encode JSON-RPC request
+    Note over Client: IMPORTANT: NO pretty printing&lt;br/&gt;(must be single line)
+    Client-&gt;&gt;Process: Write JSON to stdin + newline
+
+    Process-&gt;&gt;Server: Forward tool call
+    Server-&gt;&gt;API: HTTP POST /scrape
+    Note over API: Scrape webpage&lt;br/&gt;Extract markdown&lt;br/&gt;Take screenshot&lt;br/&gt;Find links
+    API--&gt;&gt;Server: Return scraped data
+
+    Server-&gt;&gt;Process: Notification: &quot;Scraping URL&quot;
+    Process--&gt;&gt;Client: Read notification from stdout
+    Note over Client: Skip notification&lt;br/&gt;(no matching ID)
+
+    Server-&gt;&gt;Process: Response with ID=2
+    Process--&gt;&gt;Client: Read response from stdout
+    Client-&gt;&gt;Client: Parse JSON response
+    Note over Client: Match request ID&lt;br/&gt;Extract result
+
+    Client--&gt;&gt;MCP: Return result dictionary
+
+    MCP-&gt;&gt;MCP: Parse response
+    Note over MCP: Extract:&lt;br/&gt;- markdown content&lt;br/&gt;- screenshot (base64)&lt;br/&gt;- metadata (title, desc)&lt;br/&gt;- links
+
+    MCP-&gt;&gt;MCP: extractImageURLs(markdown)
+    Note over MCP: Regex: !\[.*?\]\((.*?)\)&lt;br/&gt;Convert relative to absolute
+
+    MCP--&gt;&gt;VM: Return ScrapedContent
+    Note over VM: Update @Published properties
+    VM-&gt;&gt;UI: Update UI (via Combine)
+
+    UI-&gt;&gt;User: Display results
+    Note over UI: - Title&lt;br/&gt;- Description&lt;br/&gt;- Screenshot&lt;br/&gt;- Image gallery&lt;br/&gt;- Content&lt;br/&gt;- URL
+</code></pre>
+
+<h3>3. JSON-RPC Communication Detail</h3>
+<pre class="codehilite"><code class="language-mermaid">sequenceDiagram
+    participant Client as MCPClient
+    participant Stdin as Process stdin
+    participant Stdout as Process stdout
+    participant Server as MCP Server
+
+    Note over Client: Request ID counter++
+    Client-&gt;&gt;Client: Create JSONRPCRequest
+    Note over Client: {&lt;br/&gt;&quot;jsonrpc&quot;: &quot;2.0&quot;,&lt;br/&gt;&quot;id&quot;: 2,&lt;br/&gt;&quot;method&quot;: &quot;tools/call&quot;,&lt;br/&gt;&quot;params&quot;: {...}&lt;br/&gt;}
+
+    Client-&gt;&gt;Client: JSONEncoder.encode()
+    Note over Client: Single line JSON&lt;br/&gt;(NO prettyPrinted!)
+
+    Client-&gt;&gt;Stdin: Write JSON + &quot;\n&quot;
+    Stdin-&gt;&gt;Server: Forward bytes
+
+    Server-&gt;&gt;Server: Process request
+
+    opt Server sends notification
+        Server-&gt;&gt;Stdout: Notification JSON + &quot;\n&quot;
+        Note over Server: {&lt;br/&gt;&quot;jsonrpc&quot;: &quot;2.0&quot;,&lt;br/&gt;&quot;method&quot;: &quot;notifications/message&quot;,&lt;br/&gt;&quot;params&quot;: {...}&lt;br/&gt;}
+        Stdout-&gt;&gt;Client: readLine()
+        Client-&gt;&gt;Client: Parse JSON
+        Note over Client: No &quot;id&quot; field → notification&lt;br/&gt;Skip and read next line
+    end
+
+    Server-&gt;&gt;Stdout: Response JSON + &quot;\n&quot;
+    Note over Server: {&lt;br/&gt;&quot;jsonrpc&quot;: &quot;2.0&quot;,&lt;br/&gt;&quot;id&quot;: 2,&lt;br/&gt;&quot;result&quot;: {...}&lt;br/&gt;}
+
+    Stdout-&gt;&gt;Client: readLine()
+    Client-&gt;&gt;Client: Parse JSON
+    Note over Client: Check ID matches&lt;br/&gt;ID=2 ✓
+    Client-&gt;&gt;Client: Extract result
+</code></pre>
+
+<h3>4. Image Extraction Flow</h3>
+<pre class="codehilite"><code class="language-mermaid">sequenceDiagram
+    participant MCP as MCPServiceMac
+    participant Regex as NSRegularExpression
+    participant URL as URL Parser
+
+    Note over MCP: Received markdown content
+    MCP-&gt;&gt;Regex: Create pattern: !\[.*?\]\((.*?)\)
+    MCP-&gt;&gt;Regex: Find matches in markdown
+
+    loop For each match
+        Regex--&gt;&gt;MCP: Image URL string
+
+        alt Absolute URL (starts with http)
+            MCP-&gt;&gt;MCP: Add to imageUrls array
+        else Relative URL
+            MCP-&gt;&gt;URL: URL(string, relativeTo: baseURL)
+            URL--&gt;&gt;MCP: Absolute URL
+            MCP-&gt;&gt;MCP: Add to imageUrls array
+        end
+    end
+
+    MCP--&gt;&gt;MCP: Return imageUrls
+    Note over MCP: Example:&lt;br/&gt;[&quot;https://example.com/img1.png&quot;,&lt;br/&gt;&quot;https://example.com/img2.jpg&quot;]
+</code></pre>
+
+<hr />
+<h2>Data Flow</h2>
+<h3>Request Flow</h3>
+<pre class="codehilite"><code>User Input (URL)
+    ↓
+URL Normalization (add https://)
+    ↓
+ScraperViewModel.scrapeURL()
+    ↓
+MCPServiceMac.scrapeWebsite()
+    ↓
+MCPClient.callTool()
+    ↓
+JSON-RPC Request → stdin
+    ↓
+Node.js Process (run-mcp-server.sh)
+    ↓
+Firecrawl MCP Server
+    ↓
+Firecrawl Cloud API
+</code></pre>
+
+<h3>Response Flow</h3>
+<pre class="codehilite"><code>Firecrawl API (JSON response)
+    ↓
+Firecrawl MCP Server (format to MCP)
+    ↓
+Node.js Process
+    ↓
+stdout → JSON-RPC Response
+    ↓
+MCPClient.readLine() (parse)
+    ↓
+MCPServiceMac (extract data)
+    ↓
+Image URL extraction (regex)
+    ↓
+ScrapedContent model
+    ↓
+ScraperViewModel (@Published)
+    ↓
+ContentView (SwiftUI update)
+    ↓
+User sees results
+</code></pre>
+
+<h3>Data Transformations</h3>
+<pre class="codehilite"><code>1. Raw API Response (from Firecrawl):
+{
+  &quot;markdown&quot;: &quot;# Title\n...&quot;,
+  &quot;screenshot&quot;: &quot;base64...&quot;,
+  &quot;metadata&quot;: {
+    &quot;title&quot;: &quot;Page Title&quot;,
+    &quot;description&quot;: &quot;...&quot;,
+    ...
+  }
+}
+
+2. MCP Response Format:
+{
+  &quot;content&quot;: [{
+    &quot;text&quot;: &quot;{\&quot;markdown\&quot;:\&quot;...\&quot;,\&quot;screenshot\&quot;:\&quot;...\&quot;,\&quot;metadata\&quot;:{...}}&quot;,
+    &quot;type&quot;: &quot;text&quot;
+  }]
+}
+
+3. Parsed in Swift:
+parsedData[&quot;markdown&quot;] as? String
+parsedData[&quot;screenshot&quot;] as? String
+parsedData[&quot;metadata&quot;] as? [String: Any]
+
+4. Image Extraction:
+Markdown: &quot;![alt](image.png)&quot;
+    ↓ Regex
+Images: [&quot;https://example.com/image.png&quot;]
+
+5. Final Model:
+ScrapedContent(
+  title: &quot;Page Title&quot;,
+  description: &quot;...&quot;,
+  content: &quot;# Title\n...&quot;,
+  url: &quot;https://example.com&quot;,
+  metadata: {...},
+  screenshot: &quot;base64...&quot;,
+  images: [&quot;https://...&quot;]
+)
+</code></pre>
+
+<hr />
+<h2>Key Implementation Details</h2>
+<h3>1. Why the Wrapper Script?</h3>
+<p><strong>Problem</strong>: macOS GUI apps don't inherit shell PATH environment variables.</p>
+<p><strong>Solution</strong>: <code>run-mcp-server.sh</code> wrapper script that:
+- Sets PATH to include Node.js binaries (from nvm)
+- Sets FIRECRAWL_API_KEY environment variable
+- Executes <code>npx -y firecrawl-mcp</code></p>
+<p><strong>Without wrapper</strong>: App can't find <code>npx</code> or <code>node</code> commands.</p>
+<h3>2. JSON-RPC Line-Based Protocol</h3>
+<p><strong>Critical Issue</strong>: The MCP protocol expects <strong>one JSON message per line</strong>.</p>
+<p><strong>Wrong</strong> (with prettyPrinted):</p>
+<pre class="codehilite"><code class="language-json">{
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;id&quot;: 1,
+  &quot;method&quot;: &quot;initialize&quot;
+}
+</code></pre>
+
+<p>This has 4 lines! The server will only read the first <code>{</code> and fail.</p>
+<p><strong>Correct</strong> (single line):</p>
+<pre class="codehilite"><code class="language-json">{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;initialize&quot;}
+</code></pre>
+
+<p><strong>Implementation</strong>:</p>
+<pre class="codehilite"><code class="language-swift">let encoder = JSONEncoder()
+// NO prettyPrinted!
+let requestData = try encoder.encode(request)
+</code></pre>
+
+<h3>3. Handling Notifications vs Responses</h3>
+<p><strong>Notifications</strong>: Messages without an <code>id</code> field</p>
+<pre class="codehilite"><code class="language-json">{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;notifications/message&quot;,&quot;params&quot;:{...}}
+</code></pre>
+
+<p><strong>Responses</strong>: Messages with an <code>id</code> field matching the request</p>
+<pre class="codehilite"><code class="language-json">{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2,&quot;result&quot;:{...}}
+</code></pre>
+
+<p><strong>Implementation</strong>:</p>
+<pre class="codehilite"><code class="language-swift">while attempts &lt; maxAttempts {
+    let responseData = try await readLine(from: outputPipe)
+
+    if let json = try? JSONSerialization.jsonObject(with: responseData) {
+        if json[&quot;method&quot;] != nil &amp;&amp; json[&quot;id&quot;] == nil {
+            // Skip notification, continue reading
+            continue
+        }
+    }
+
+    let response = try decoder.decode(JSONRPCResponse.self, from: responseData)
+    if response.id == currentRequestID {
+        return response // Found matching response!
+    }
+}
+</code></pre>
+
+<h3>4. Image URL Extraction</h3>
+<p><strong>Markdown Pattern</strong>:</p>
+<pre class="codehilite"><code class="language-markdown">![Alt text](https://example.com/image.png)
+![Logo](/logo.png)
+</code></pre>
+
+<p><strong>Regex Pattern</strong>:</p>
+<pre class="codehilite"><code class="language-swift">let pattern = #&quot;!\[.*?\]\((.*?)\)&quot;#
+</code></pre>
+
+<p><strong>Explanation</strong>:
+- <code>!</code> - Literal exclamation mark
+- <code>\[.*?\]</code> - Alt text in brackets (non-greedy)
+- <code>\(</code> - Opening parenthesis
+- <code>(.*?)</code> - <strong>Capture group</strong>: URL (non-greedy)
+- <code>\)</code> - Closing parenthesis</p>
+<p><strong>Relative URL Handling</strong>:</p>
+<pre class="codehilite"><code class="language-swift">if let imageURL = URL(string: urlString, relativeTo: baseURL)?.absoluteString {
+    imageUrls.append(imageURL)
+}
+</code></pre>
+
+<p>Converts <code>/logo.png</code> → <code>https://example.com/logo.png</code></p>
+<h3>5. Stdio Communication</h3>
+<p><strong>Pipes Setup</strong>:</p>
+<pre class="codehilite"><code class="language-swift">inputPipe = Pipe()   // stdin to process
+outputPipe = Pipe()  // stdout from process
+errorPipe = Pipe()   // stderr from process
+
+process.standardInput = inputPipe
+process.standardOutput = outputPipe
+process.standardError = errorPipe
+</code></pre>
+
+<p><strong>Writing</strong>:</p>
+<pre class="codehilite"><code class="language-swift">var dataToSend = requestData
+dataToSend.append(contentsOf: &quot;\n&quot;.utf8)
+inputPipe.fileHandleForWriting.write(dataToSend)
+</code></pre>
+
+<p><strong>Reading</strong> (low-level file descriptor):</p>
+<pre class="codehilite"><code class="language-swift">let fileDescriptor = handle.fileDescriptor
+var readBuffer = [UInt8](repeating: 0, count: 1024)
+let bytesRead = read(fileDescriptor, &amp;readBuffer, 1024)
+
+if bytesRead &gt; 0 {
+    buffer.append(Data(readBuffer[0..&lt;bytesRead]))
+}
+</code></pre>
+
+<h3>6. Async/Await Integration</h3>
+<p><strong>Problem</strong>: MCP communication is asynchronous.</p>
+<p><strong>Solution</strong>: Swift async/await with continuations</p>
+<pre class="codehilite"><code class="language-swift">private func readLine(from pipe: Pipe) async throws -&gt; Data {
+    return try await withCheckedThrowingContinuation { continuation in
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Blocking I/O on background thread
+            let data = ... // read from pipe
+            continuation.resume(returning: data)
+        }
+    }
+}
+</code></pre>
+
+<p>This allows:</p>
+<pre class="codehilite"><code class="language-swift">let response = try await sendRequest(method: &quot;tools/call&quot;, params: params)
+</code></pre>
+
+<hr />
+<h2>Error Handling</h2>
+<h3>Common Errors</h3>
+<ol>
+<li><strong>Process Start Failed</strong></li>
+<li>Cause: Wrapper script not found or not executable</li>
+<li>
+<p>Fix: Use absolute path to script</p>
+</li>
+<li>
+<p><strong>Invalid URL</strong></p>
+</li>
+<li>Cause: URL missing scheme</li>
+<li>
+<p>Fix: Auto-prepend <code>https://</code> in ScraperViewModel</p>
+</li>
+<li>
+<p><strong>Tool Parameter Validation Failed</strong></p>
+</li>
+<li>Cause: Invalid arguments to firecrawl_scrape</li>
+<li>
+<p>Fix: Ensure URL has proper scheme</p>
+</li>
+<li>
+<p><strong>Timeout</strong></p>
+</li>
+<li>Cause: readLine() didn't receive data</li>
+<li>
+<p>Fix: Increased timeout to 60 seconds</p>
+</li>
+<li>
+<p><strong>No API Key</strong></p>
+</li>
+<li>Cause: FIRECRAWL_API_KEY not set</li>
+<li>Fix: Set in wrapper script</li>
+</ol>
+<h3>Error Propagation</h3>
+<pre class="codehilite"><code>Low-level error (Process)
+    ↓
+MCPClient.MCPError
+    ↓
+MCPServiceMac.FirecrawlError
+    ↓
+ScraperViewModel.errorMessage
+    ↓
+ContentView displays error
+</code></pre>
+
+<hr />
+<h2>Performance Considerations</h2>
+<ol>
+<li><strong>Subprocess overhead</strong>: ~100ms to start Node.js process (once per app session)</li>
+<li><strong>API latency</strong>: 1-5 seconds depending on page complexity</li>
+<li><strong>Screenshot encoding</strong>: Base64 encoding adds ~33% size overhead</li>
+<li><strong>Image loading</strong>: AsyncImage loads images asynchronously, non-blocking</li>
+<li><strong>Memory</strong>: Screenshots can be large (1-2MB base64), consider memory limits</li>
+</ol>
+<hr />
+<h2>Security Considerations</h2>
+<ol>
+<li><strong>API Key Storage</strong>: Currently hardcoded in wrapper script - should use Keychain in production</li>
+<li><strong>Subprocess Isolation</strong>: Node.js process runs with app's privileges</li>
+<li><strong>URL Validation</strong>: Basic validation, consider additional sanitization</li>
+<li><strong>HTTPS</strong>: Always use HTTPS for external URLs</li>
+</ol>
+<hr />
+<h2>Future Improvements</h2>
+<ol>
+<li><strong>Caching</strong>: Cache scrape results to reduce API calls</li>
+<li><strong>Batch Scraping</strong>: Support multiple URLs</li>
+<li><strong>Export</strong>: Export results to PDF, markdown, or JSON</li>
+<li><strong>Settings</strong>: Configure API key, timeout, screenshot quality via UI</li>
+<li><strong>Error Recovery</strong>: Automatic retry on transient failures</li>
+<li><strong>Progress Tracking</strong>: Show detailed progress during scraping</li>
+</ol>
+<hr />
+<h2>Glossary</h2>
+<ul>
+<li><strong>MCP</strong>: Model Context Protocol - A protocol for AI tools to communicate</li>
+<li><strong>JSON-RPC</strong>: Remote procedure call protocol using JSON</li>
+<li><strong>stdio</strong>: Standard input/output streams for process communication</li>
+<li><strong>npx</strong>: Node Package Execute - Runs npm packages</li>
+<li><strong>nvm</strong>: Node Version Manager - Manages Node.js versions</li>
+<li><strong>SwiftUI</strong>: Apple's declarative UI framework</li>
+<li><strong>Combine</strong>: Apple's reactive programming framework (@Published)</li>
+</ul>
+<hr />
+<h2>Conclusion</h2>
+<p>The FirecrawlScraper demonstrates a multi-layer architecture combining:
+- Native Swift UI (SwiftUI)
+- JSON-RPC protocol implementation
+- Subprocess management (Node.js)
+- External API integration (Firecrawl)
+- Async/await concurrency
+- Regex-based content extraction</p>
+<p>The key innovation is the wrapper script that enables macOS GUI apps to communicate with Node.js-based MCP servers despite PATH limitations.</p>
+
+    <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #ddd; text-align: center; color: #888;">
+        <p>Generated from ARCHITECTURE.md</p>
+        <p>FirecrawlScraper Documentation</p>
+    </div>
+</body>
+</html>
