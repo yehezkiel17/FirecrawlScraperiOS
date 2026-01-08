@@ -40,7 +40,9 @@ struct ContentView: View {
                 }
                 .padding()
             }
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .gesture(
                 DragGesture(minimumDistance: 10)
                     .onEnded { value in
@@ -108,7 +110,11 @@ struct ContentView: View {
                 .cornerRadius(8)
         }
         .padding()
+        #if os(iOS)
         .background(Color(.systemBackground))
+        #else
+        .background(Color(NSColor.windowBackgroundColor))
+        #endif
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
         .padding(.horizontal)
@@ -131,7 +137,11 @@ struct ContentView: View {
                 .padding(.horizontal)
         }
         .padding()
+        #if os(iOS)
         .background(Color(.systemBackground))
+        #else
+        .background(Color(NSColor.windowBackgroundColor))
+        #endif
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
         .padding(.horizontal)
@@ -187,7 +197,11 @@ struct ContentView: View {
                     .frame(width: 80)
             }
             .padding(12)
+            #if os(iOS)
             .background(Color(.systemBackground))
+            #else
+            .background(Color(NSColor.windowBackgroundColor))
+            #endif
             .cornerRadius(16)
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
         }
@@ -215,8 +229,10 @@ struct ContentView: View {
 
                 TextField("Enter URL", text: $urlInput)
                     .textFieldStyle(.plain)
+                    #if os(iOS)
                     .autocapitalization(.none)
                     .keyboardType(.URL)
+                    #endif
                     .focused($isInputFocused)
                     .submitLabel(.done)
                     .onSubmit {
@@ -231,7 +247,11 @@ struct ContentView: View {
                 }
             }
             .padding()
+            #if os(iOS)
             .background(Color(.systemBackground))
+            #else
+            .background(Color(NSColor.windowBackgroundColor))
+            #endif
             .cornerRadius(12)
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
             .simultaneousGesture(TapGesture().onEnded { })
@@ -294,7 +314,11 @@ struct ContentView: View {
             }
             .padding()
         }
+        #if os(iOS)
         .background(Color(.systemBackground))
+        #else
+        .background(Color(NSColor.windowBackgroundColor))
+        #endif
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
         .padding(.horizontal)
@@ -319,7 +343,11 @@ struct ContentView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
+        #if os(iOS)
         .background(Color(.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .cornerRadius(12)
     }
 
