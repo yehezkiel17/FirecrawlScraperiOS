@@ -34,7 +34,6 @@ I've created the necessary files:
      - ScraperViewModel.swift
      - Config.swift
      - TappableTextView.swift
-     - GameLinks.swift
      - MCPClient.swift
      - MCPServiceMac.swift
 

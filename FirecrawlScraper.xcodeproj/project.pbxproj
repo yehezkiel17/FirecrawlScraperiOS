@@ -15,7 +15,6 @@
 		A10000011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000012 /* Assets.xcassets */; };
 		A10000029 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000030 /* Config.swift */; };
 		A10000033 /* TappableTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000034 /* TappableTextView.swift */; };
-		A10000035 /* GameLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000036 /* GameLinks.swift */; };
 		A10000040 /* FirecrawlScraperMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000039 /* FirecrawlScraperMacApp.swift */; };
 		A10000042 /* MCPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000041 /* MCPClient.swift */; };
 		A10000044 /* MCPServiceMac.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000043 /* MCPServiceMac.swift */; };
@@ -24,7 +23,6 @@
 		A10000048 /* ScraperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000008 /* ScraperViewModel.swift */; };
 		A10000049 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000030 /* Config.swift */; };
 		A10000050 /* TappableTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000034 /* TappableTextView.swift */; };
-		A10000051 /* GameLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000036 /* GameLinks.swift */; };
 		A10000052 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000012 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -39,7 +37,6 @@
 		A10000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A10000030 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		A10000034 /* TappableTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableTextView.swift; sourceTree = "<group>"; };
-		A10000036 /* GameLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLinks.swift; sourceTree = "<group>"; };
 		A10000038 /* FirecrawlScraperMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirecrawlScraperMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000039 /* FirecrawlScraperMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirecrawlScraperMacApp.swift; sourceTree = "<group>"; };
 		A10000041 /* MCPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPClient.swift; sourceTree = "<group>"; };
@@ -80,7 +77,6 @@
 				A10000004 /* ContentView.swift */,
 				A10000034 /* TappableTextView.swift */,
 				A10000006 /* Models.swift */,
-				A10000036 /* GameLinks.swift */,
 				A10000008 /* ScraperViewModel.swift */,
 				A10000010 /* MCPService.swift */,
 				A10000043 /* MCPServiceMac.swift */,
@@ -203,7 +199,6 @@
 				A10000003 /* ContentView.swift in Sources */,
 				A10000033 /* TappableTextView.swift in Sources */,
 				A10000005 /* Models.swift in Sources */,
-				A10000035 /* GameLinks.swift in Sources */,
 				A10000007 /* ScraperViewModel.swift in Sources */,
 				A10000009 /* MCPService.swift in Sources */,
 				A10000029 /* Config.swift in Sources */,
@@ -218,7 +213,6 @@
 				A10000046 /* ContentView.swift in Sources */,
 				A10000050 /* TappableTextView.swift in Sources */,
 				A10000047 /* Models.swift in Sources */,
-				A10000051 /* GameLinks.swift in Sources */,
 				A10000048 /* ScraperViewModel.swift in Sources */,
 				A10000044 /* MCPServiceMac.swift in Sources */,
 				A10000042 /* MCPClient.swift in Sources */,

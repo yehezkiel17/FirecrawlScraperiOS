@@ -58,7 +58,6 @@ For each of these files, check BOTH `FirecrawlScraper` AND `FirecrawlScraperMac`
 - `ScraperViewModel.swift`
 - `Config.swift`
 - `TappableTextView.swift`
-- `GameLinks.swift`
 - `MCPClient.swift`
 - `MCPServiceMac.swift`
 

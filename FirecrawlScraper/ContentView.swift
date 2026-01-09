@@ -23,9 +23,6 @@ struct ContentView: View {
                         apiKeyWarning
                     }
 
-                    // Quick access to HoYoverse games
-                    quickGamesSection
-
                     inputSection
 
                     if viewModel.isLoading {
@@ -145,80 +142,6 @@ struct ContentView: View {
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
         .padding(.horizontal)
-    }
-
-    private var quickGamesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("HoYoverse Games")
-                .font(.headline)
-                .foregroundColor(.primary)
-                .padding(.horizontal)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(GameLinksData.hoyoverseGames) { game in
-                        gameCard(game: game)
-                    }
-                }
-                .padding(.horizontal)
-            }
-        }
-    }
-
-    private func gameCard(game: GameLink) -> some View {
-        Button(action: {
-            urlInput = game.url
-            dismissKeyboard()
-            scrapeWebsite()
-        }) {
-            VStack(spacing: 8) {
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: gradientColors(for: game.gradient),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 60, height: 60)
-
-                    Image(systemName: game.icon)
-                        .font(.system(size: 28))
-                        .foregroundColor(.white)
-                }
-
-                Text(game.name)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .frame(width: 80)
-            }
-            .padding(12)
-            #if os(iOS)
-            .background(Color(.systemBackground))
-            #else
-            .background(Color(NSColor.windowBackgroundColor))
-            #endif
-            .cornerRadius(16)
-            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-        }
-    }
-
-    private func gradientColors(for colorNames: [String]) -> [Color] {
-        colorNames.map { name in
-            switch name.lowercased() {
-            case "purple": return Color.purple
-            case "pink": return Color.pink
-            case "orange": return Color.orange
-            case "yellow": return Color.yellow
-            case "blue": return Color.blue
-            case "cyan": return Color.cyan
-            default: return Color.gray
-            }
-        }
     }
 
     private var inputSection: some View {
